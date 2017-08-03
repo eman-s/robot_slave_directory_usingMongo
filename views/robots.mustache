@@ -6,11 +6,12 @@
     <title>need a robot slave?</title>
   </head>
   <body id="indexBody">
-    <a href="http://localhost:3000/robotsneedwork">FOR HIRE</a>
+    <a href="/robotsneedwork">FOR HIRE</a>
+    <a href="/robotindex">HOME</a>
     {{#users}}
     <section class="avatarBox">
 
-      <a href="http://localhost:3000/robot/{{username}}"><img class="robotAvatars" src="{{avatar}}" alt="{{name}}"></a>
+      <a href="/robot/{{username}}"><img class="robotAvatars" src="{{avatar}}" alt="{{name}}"></a>
       <h1 class="robotName">{{name}}</h1>
       {{ #job }}
           {{ job }},
