@@ -52,8 +52,12 @@ MongoClient.connect(url, function(err, db) {
 
 
 app.get('/', function (req, res) {
-  res.send('Hello World! It is now ' + (new Date()) + ` <a href="http://localhost:3000/robotindex">robot?</a>` );
+  res.send('Hello World! It is now ' + (new Date()) + ` <a href="http://localhost:3000/login">robot?</a>` );
 });
+
+app.get('/login', function (req,res){
+  res.render('login')
+})
 
 app.get('/robotindex', function (req, res) {
   MongoClient.connect(url, function(err, db){
