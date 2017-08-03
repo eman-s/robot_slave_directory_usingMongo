@@ -9,9 +9,13 @@
   "author": "E-Man",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "express-session": "^1.15.5",
     "mongodb": "^2.2.30",
-    "mustache-express": "^1.2.5"
+    "mustache-express": "^1.2.5",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {}
 }

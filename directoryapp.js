@@ -2,8 +2,20 @@ const express = require('express');
 const app = express();
 const mustacheExpress = require('mustache-express');
 const MongoClient = require('mongodb').MongoClient;
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+const bodyParser = require('body-parser');
 
 const url = 'mongodb://localhost:27017/robots';
+
+// Register '.mustache' extension with The Mustache Express
+app.engine('mustache', mustacheExpress());
+//-^
+app.set('view engine', 'mustache');
+app.set('views', __dirname + '/views');
+//-^
+app.use(express.static('public'));
 
 
 var findRobotsForHire = function(db, callback) {
@@ -35,16 +47,9 @@ MongoClient.connect(url, function(err, db) {
     db.close();
   });
 });
-
-
-// Register '.mustache' extension with The Mustache Express
-app.engine('mustache', mustacheExpress());
-
-
-app.set('view engine', 'mustache');
-app.set('views', __dirname + '/views');
 //-^
-app.use(express.static('public'));
+
+
 
 app.get('/', function (req, res) {
   res.send('Hello World! It is now ' + (new Date()) + ` <a href="http://localhost:3000/robotindex">robot?</a>` );
