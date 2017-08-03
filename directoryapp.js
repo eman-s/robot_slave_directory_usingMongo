@@ -16,7 +16,46 @@ app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
 //-^
 app.use(express.static('public'));
+//configure body-parser
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.authenticate(username, password, function(err, user) {
+            if (err) {
+                return done(err)
+            }
+            if (user) {
+                return done(null, user)
+            } else {
+                return done(null, false, {
+                    message: "There is no user with that username and password."
+                })
+            }
+        })
+    }));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+    User.findById(id, function(err, user) {
+        done(err, user);
+    });
+});
+
+
+app.use(session({
+    secret: 'this is a secret',
+    resave: false,
+    saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 var findRobotsForHire = function(db, callback) {
   // Get the documents collection
@@ -37,17 +76,18 @@ var findAllRobots = function(db, callback) {
     callback(result);
   });
 }
-// Use connect method to connect to the server
-MongoClient.connect(url, function(err, db) {
-  console.log('error?', err);
-  console.log("Connected successfully to server");
 
-  findRobotsForHire(db, function() {
-    console.log('the search is done. I\'m out.');
-    db.close();
-  });
-});
-//-^
+// // Use connect method to connect to the server
+// MongoClient.connect(url, function(err, db) {
+//   console.log('error?', err);
+//   console.log("Connected successfully to server");
+//
+//   findRobotsForHire(db, function() {
+//     console.log('the search is done. I\'m out.');
+//     db.close();
+//   });
+// });
+// //-^
 
 
 
@@ -58,6 +98,54 @@ app.get('/', function (req, res) {
 app.get('/login', function (req,res){
   res.render('login')
 })
+
+app.post('/login', passport.authenticate('local',{
+  successRedirect:'/robotindex',
+  failureRedirect:'/'
+}));
+
+app.get('/register',function(req,res){
+  res.render('register');
+});
+
+app.post('/register/', function(req, res) {
+    req.checkBody('username', 'Username must be alphanumeric').isAlphanumeric();
+    req.checkBody('username', 'Username is required').notEmpty();
+    req.checkBody('password', 'Password is required').notEmpty();
+
+    req.getValidationResult()
+        .then(function(result) {
+            if (!result.isEmpty()) {
+                return res.render("register", {
+                    username: req.body.username,
+                    errors: result.mapped()
+                });
+            }
+            const user = new User({
+                username: req.body.username,
+                password: req.body.password
+            })
+
+            const error = user.validateSync();
+            if (error) {
+                return res.render("register", {
+                    errors: normalizeMongooseErrors(error.errors)
+                })
+            }
+
+            user.save(function(err) {
+                if (err) {
+                    return res.render("register", {
+                        messages: {
+                            error: ["That username is already taken."]
+                        }
+                    })
+                }
+                return res.redirect('/');
+            })
+        })
+});
+
 
 app.get('/robotindex', function (req, res) {
   MongoClient.connect(url, function(err, db){
