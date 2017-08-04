@@ -9,10 +9,14 @@
   "author": "E-Man",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "express-session": "^1.15.5",
+    "express-sessions": "^1.0.6",
+    "express-validator": "^3.2.1",
     "mongodb": "^2.2.30",
+    "mongoose": "^4.10.8",
     "mustache-express": "^1.2.5",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0"

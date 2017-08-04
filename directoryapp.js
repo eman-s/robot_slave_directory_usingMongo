@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const mustacheExpress = require('mustache-express');
 const MongoClient = require('mongodb').MongoClient;
@@ -6,15 +7,21 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const models = require("./models");
+const expressValidator = require('express-validator');
+const User = models.User;
+const mongoose = require('mongoose');
 
-const url = 'mongodb://localhost:27017/robots';
+
+mongoose.connect('mongodb://localhost:27017/robots');
 
 // Register '.mustache' extension with The Mustache Express
 app.engine('mustache', mustacheExpress());
 //-^
 app.set('view engine', 'mustache');
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname + '/views'));
 //-^
+
 app.use(express.static('public'));
 //configure body-parser
 app.use(bodyParser.urlencoded({
@@ -52,6 +59,9 @@ app.use(session({
     secret: 'this is a secret',
     resave: false,
     saveUninitialized: false,
+    store: new(require('express-sessions'))({
+      storage: 'mongodb',
+    })
 }));
 
 app.use(passport.initialize());
